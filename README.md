@@ -117,3 +117,16 @@ Follow me on LinkedIn : [![](https://img.shields.io/badge/LinkedIn-0077B5?style=
 
 ---
 
+
+
+| 103   | Open-source LLMs for Commercial Use                          | [👆](https://github.com/eugeneyan/open-llms) |
+| 104   | HayStack - LLM framework for production-ready applications   | [👆](https://github.com/deepset-ai/haystack) |
+| 105   | Awesome-LLM: Curated list of Large Language Model papers     | [👆](https://github.com/Hannibal046/Awesome-LLM) |
+| 106   | Top Open-Source LLMs for 2024 and Their Uses                 | [👆](https://www.datacamp.com/blog/top-open-source-llms) |
+| 107   | Top 10 open source LLMs for 2025                             | [👆](https://www.instaclustr.com/education/open-source-ai/top-10-open-source-llms-for-2025/) |
+| 108   | 40 LLM Projects to Upgrade Your AI Skillset                  | [👆](https://www.projectpro.io/article/llm-project-ideas/881) |
+| 109   | Top 5 Must-Have LLM Open-Source Projects                     | [👆](https://waliamrinal.medium.com/top-5-must-have-llm-open-source-projects-ddbe6b199266) |
+| 110   | List of open source repo packing tools                       | [👆](https://community.openai.com/t/list-of-open-source-repo-packing-tools/1077324) |
+| 111   | Best Open Source LLMs of 2025                                | [👆](https://klu.ai/blog/open-source-llm-models) |
+| 112   | LLM Project Ideas - Beginners                                | [👆](https://discuss.huggingface.co/t/llm-project-ideas/72328) |
+
