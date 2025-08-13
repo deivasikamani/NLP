@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SSL Checker</title>
+<meta name="description" content="Check SSL certificate information">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta name="author" content="iban.com">
+<meta name="copyright" content="Copyright © ssl.org All rights reserved.">
+<meta name="referrer" content="no-referrer">
+
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="preload" href="/webfonts/fa-duotone-900.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="/css/style.css?v=05:33:30"> 
+</head>
+
+<body>
+<header class="d-print-none">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+<div class="container px-sm-0 px-0">
+<a class="navbar-brand" href="/"><img id="logo" src="/img/logo.svg" alt="SSL" title="SSL.org" width="130" height="57"></a>
+<button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="toggler-icon top-bar"></span>
+<span class="toggler-icon middle-bar"></span>
+<span class="toggler-icon bottom-bar"></span>
+</button>
+<div class="collapse navbar-collapse justify-content-end expanded" id="navbarSupportedContent">
+
+<ul class="navbar-nav ml-auto my-sx-2 m-lg-0">
+
+<li class="nav-item"><a class="nav-link " aria-current="page" href="/">SSL Checker</a></li>
+<li class="nav-item"><a class="nav-link " aria-current="page" href="/csr-generator">CSR Generator</a></li>
+<li class="nav-item"><a class="nav-link " aria-current="page" href="/csr-decoder">CSR Decoder</a></li>
+<li class="nav-item"><a class="nav-link " aria-current="page" href="/certificate-key-matcher">SSL Matcher</a></li>
+<li class="nav-item"><a class="nav-link " aria-current="page" href="/server-config-generator">Config Generator</a></li>
+<li class="nav-item"><a class="nav-link " href="/cipher-suite-mapping">Cipher Mapping</a></li>
+<li class="nav-item"><a class="nav-link " href="/abbreviations">Abbreviations</a></li>
+<!--<li class="nav-item"><div id="google_translate_element"></div></li>-->
+
+</ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
+<!--
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({
+pageLanguage: 'en',
+layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>--><script>
+    $(document).ready(function() {
+        function extractDomain(url) {
+            //var domain = url.replace(/(https?:\/\/)?(www\.)?/, '');
+             var domain = url.replace(/(https?:\/\/)/, '');
+            var domainEnd = domain.indexOf('/');
+            if (domainEnd > -1) {
+                domain = domain.substring(0, domainEnd);
+            }
+            return domain;
+        }
+
+
+		
+        $('#domain').on('input', function() {
+            var userInput = $(this).val();
+            var cleanDomain = extractDomain(userInput);
+
+            // Update the input field's value with the cleaned domain
+            $(this).val(cleanDomain);
+        });
+        
+        
+         $(function() {
+		    $('form').on('submit', function() {
+		      var $btn = $(this).find('button[type="submit"]');
+		      $btn.prop('disabled', true).text('Loading...');
+		      // The button will remain disabled until the page refreshes or you re-enable it programmatically.
+		    });
+		  });
+        
+
+    });
+</script>
+
+
+
+
+<section class="section mt-5 py-5">
+<div class="container">
+
+<div class="row justify-content-center mt-5 mx-1">
+<div class="col-lg-10 col-md-10">
+<div class="section-title text-center p-60px-b sm-p-40px-b ">
+<h1>SSL Certificate Checker</h1>
+<p><!--Service for diagnostic & validation, analysis & test web server configuration for errors/problems of TLS/SSL Certificate installation-->Web server configuration analysis and testing service for diagnosing, validating and resolving TLS/SSL certificate installation errors.</p>
+</div>
+</div>
+
+
+<div class="hb-form form-normal m-5 pt-4 col-md-10 row justify-content-center">
+
+<div id="error-div" class="error-message alert alert-warning col-md-10" style="display: none;"></div>
+
+
+
+
+
+
+<form method="post" class="mb-3">
+
+<div class="row justify-content-center align-self-center">
+
+<div class="col-xl-7 col-lg-7 col-md-7 align-self-center"><p>Example: www.ssl.org / wikipedia.org <a href="#" data-bs-toggle="modal" data-bs-target="#infomodal">more info<i class="fad fa-info-circle fa-lg"></i></a></p></div><div class="col-xl-3 col-lg-3 col-md-3 align-self-center"></div>
+
+<div class="col-xl-7 col-lg-7 col-md-7 align-self-center">
+
+<input id="domain" name="domain" class="form-control align-middle" type="text" placeholder="Please Type domain or subdomain without 'https://' code" aria-label="Please Type VAT Number with country code" title="Please Type domain or subdomain" required="">
+</div>
+
+<div class="col-xl-3 col-lg-3 col-md-3 align-self-center">
+<button class="m-btn m-btn-theme" type="submit" >Check SSL</button>
+</div>
+
+  </div>
+</form>
+
+
+</div></div>
+<div class="col-md-12 pt-2">
+<div class="">
+
+
+
+
+  </div></div></div>
+
+</section>
+
+<section class="section py-5 d-print-none" style="background: #f8faff;">
+
+<div class="container">
+
+
+<div class="col-lg-12 col-md-12 py-5">
+<div class="section-title text-center p-60px-b sm-p-40px-b ">
+<h2>Free online tool for test SSL security</h2>
+</div>
+</div>
+
+
+<div class="row style-boxed mx-md-5 px-md-5">
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+</div>
+<h3 class="xs-title"><i class="fad fa-fingerprint"></i> Certificate Details</h3>
+<p>Validate certificate installation, issuer identification and Subject Alternative Name (SANs)</p>
+</div>
+</a>
+</div>
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+</div>
+<h3 class="xs-title"><i class="fad fa-calendar-day"></i> SSL Expiry Check</h3>
+<p>Determines whether the certificate is currently valid or has expired and calculate remaining days to expire.</p>
+</div>
+</a>
+</div>
+
+
+
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+
+</div>
+<h3 class="xs-title"><i class="fad fa-cogs"></i> TLS Protocols</h3>
+<p>Identifying TLS/SSL Protocols compatibility and required versions for the specified host.</p>
+</div>
+</a>
+</div>
+
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+
+</div>
+<h3 class="xs-title"><i class="fad fa-retweet"></i> Cipher Algorithms</h3>
+<p>Retrieves the cipher suites supported by the host for each TLS/SSL protocol. Check for unsafe ciphers enabled.</p>
+</div>
+</a>
+</div>
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+</div>
+
+<h3 class="xs-title"><i class="fad fa-monitor-heart-rate"></i> Vulnerability Scanner</h3>
+<p>Detecting known risk security issues : BEAST, POODLE, Heartbeat, Ticketbleed, ROBOT and more.</p>
+</div>
+</a>
+</div>
+
+
+
+
+
+
+
+<div class="col-lg-4 col-md-6">
+<a href="#">
+<div class="xs-service-block">
+<div class="service-img">
+</div>
+<h3 class="xs-title"><i class="fad fa-server"></i> Server Headers</h3>
+<p>Response headers, providing insights into the server's capabilities and security settings.</p>
+</div>
+</a>
+</div>
+
+</div></div>
+</section>
+
+
+<section class="section py-5 d-print-none">
+
+<div class="container">
+
+<div class="row">
+<div class="col-lg-12">
+
+<h4>SSL definition and history</h4>
+
+<p>SSL is an abbreviation and stands for Secure Sockets Layer. It is a cryptographic protocol that provides secure communication between a web server and a web browser. SSL encrypts all communication between the server and the browser, so that if anyone intercepts the communication it is unreadable.</p>
+
+<p>SSL is the predecessor to TLS (another abbreviation which standas for Transport Layer Security). TLS is a more modern and secure protocol than SSL, and it is the protocol that is currently used by most websites.</p>
+
+<h4>Browser and server communication</h4>
+
+<p>When you visit a website that is using SSL, your browser will send a message to the server asking for the website's SSL certificate. The server will then send the certificate back to the browser. The browser will then verify the certificate to make sure that it is valid. If the certificate is valid, the browser will establish a secure connection with the server.</p>
+
+<p>A secure HTTPS connection to a domain (website) with a valid SSL certificate from a trusted certificate authority ensures that all communication between your web browser and the website is encrypted and secure. This means that your personal information, such as your credit card number and password, cannot be intercepted and read by third parties.</p>
+
+<h4>Establish a secure HTTPS connection</h4>
+
+<p>This process is also called 'handshake' and it involves the following steps:</p>
+
+<ul>
+<li>The client (web browser) sends a request to the server (website) for a secure connection. This request includes the client's supported cipher suites and the domain name of the website.</li>
+
+<li>The server sends its SSL certificate to the client. The SSL certificate contains information about the website, such as the domain name, the organization name, and the expiration date. It also includes the server's public key.</li>
+
+<li>The client verifies the SSL certificate. The client checks the validity of the certificate by making sure that it is issued by a trusted certificate authority and that it has not expired. The client also checks the domain name in the certificate to make sure that it matches the domain name of the website.</li>
+
+<li>The client generates a random session key and encrypts it with the server's public key. The client then sends the encrypted session key to the server.
+The server decrypts the session key with its private key. The server then uses the session key to encrypt all communication between the server and the client.</li>
+
+<li>This handshake between the server and your browser all take palce behind the scenes in hundreds of a second.</li>
+</ul>
+
+<p>Once the handshake is complete, the client and the server can communicate securely.</p>
+
+
+</div></div></div>
+</section>
+
+<div class="modal fade" id="infomodal" tabindex="-1" role="dialog" aria-labelledby="infomodallabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-content">
+<div class="modal-header justify-content-center">
+<h2 class="modal-title" id="infomodallabel">How to use SSL checker form below?</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+Please ensure that you have installed your existing SSL certificate on port <strong>443</strong> or add custom port after domain for example <strong>"domain.com:8080"</strong> <br><br> Enter domain or subdomain without the <strong>"https://"</strong>.<br><br> The system will automatically clean any URLs you enter.  <br><br> Please wait for process to finish.
+
+</div>
+</div>
+</div></div><footer class="footer-one footer-dark d-print-none">
+
+
+
+<div class="footer-bottom">
+<div class="container">
+<div class="row">
+<div class="col-md-6 d-flex justify-content-lg-start justify-content-center">
+<p>Copyright © 2025 SSL.org an <a href="https://www.iban.com" >IBAN</a> Service </p>
+</div>
+<div class="col-md-6 d-flex justify-content-lg-end justify-content-center">
+<ul>
+<li><a href="https://www.iban.com/contact">Contact</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</footer>
+
+
+
+<link rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+      integrity="sha512-rw8neH+xzF44cggOhKPver8fHJIIVdPEuSuIG2V7mnc6pj0Rt1luRsTTNBBv9JX6xK218gejeHAZm3L42emfkg=="
+      crossorigin="anonymous">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+
+
+<link rel="preload" href="/css/all.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/css/all.css" /></noscript>
+
+
+
+<script>
+
+document.querySelector('.navbar-toggler').addEventListener('click', function () {
+  const navbar = document.querySelector('.navbar-expand-lg.fixed-top');
+  navbar.classList.toggle('expanded');
+});
+</script>
+
+
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://anal.enable-javascript.com/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+</body>
+</html>
